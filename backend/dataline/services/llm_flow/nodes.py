@@ -49,11 +49,14 @@ class CallModelNode(Node):
     @classmethod
     def run(cls, state: QueryGraphState) -> QueryGraphStateUpdate:
         # TODO: Consider replacing with mirascope
+        # GPT-5 models require temperature=1.0, others can use 0
+        temperature = 1.0 if state.options.llm_model in ["gpt-5", "gpt-5-mini", "o3"] else 0
+        
         model = ChatOpenAI(
             model=state.options.llm_model,
             base_url=state.options.openai_base_url,
             api_key=state.options.openai_api_key,
-            temperature=0,
+            temperature=temperature,
             streaming=True,
         )
         sql_tools = state.sql_toolkit.get_tools()
